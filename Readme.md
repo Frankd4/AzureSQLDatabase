@@ -1,4 +1,4 @@
-## Template Description
+##  ARM Template add Azure SQL Database to a Azure SQL Database Elastic Pool
 
 The ARM template defines the following resources:
 
@@ -11,7 +11,7 @@ The ARM template defines the following resources:
 
 ## Deployment Steps
 
-Follow the steps below to deploy the Azure SQL Database into a Azure SQL Database Elastic Pool using the provided ARM template:
+Follow the steps below to deploy the Azure SQL Database to a Azure SQL Database Elastic Pool using the provided ARM template:
 
 1. Navigate to the directory where the `ARM_Template_Add_AzureSQLDatabase_To_ElasticPool.json` file is located.
 2. Customize the parameters in the `ARM_Template_Parameters_Add_AzureSQLDatabase_To_ElasticPool.json` file according to your requirements. The available parameters are as follows:
