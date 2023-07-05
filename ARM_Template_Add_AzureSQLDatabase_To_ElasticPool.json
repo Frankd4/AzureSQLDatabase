@@ -1,0 +1,81 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "databaseName": {
+            "type": "String",
+            "metadata": {
+                "description": "Name of the new Azure SQL database."
+            }
+        },
+        "elasticPoolName": {
+            "type": "String",
+            "metadata": {
+                "description": "Name of the existing or new Elastic Pool."
+            }
+        },
+        "serverName": {
+            "type": "String",
+            "metadata": {
+                "description": "Name of the Azure SQL server."
+            }
+        },
+        "administratorLogin": {
+            "type": "String",
+            "metadata": {
+                "description": "Administrator username for the Azure SQL server."
+            }
+        },
+        "administratorLoginPassword": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "Administrator password for the Azure SQL server."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[parameters('serverName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "administratorLogin": "[parameters('administratorLogin')]",
+                "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+                "version": "12.0"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/elasticPools",
+            "apiVersion": "2017-10-01-preview",
+            "name": "[concat(parameters('serverName'), '/', parameters('elasticPoolName'))]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[parameters('serverName')]"
+            ],
+            "properties": {
+                "edition": "Standard",
+                "perDatabaseSettings": {
+                    "minCapacity": 0.5,
+                    "maxCapacity": 2
+                },
+                "zoneRedundant": false
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2017-10-01-preview",
+            "name": "[concat(parameters('serverName'), '/', parameters('databaseName'))]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Sql/servers/', parameters('serverName'), '/elasticPools/', parameters('elasticPoolName'))]"
+            ],
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "edition": "Standard",
+                "elasticPoolId": "[resourceId('Microsoft.Sql/servers/elasticPools', parameters('serverName'), parameters('elasticPoolName'))]"
+            }
+        }
+    ],
+    "outputs": {}
+}
